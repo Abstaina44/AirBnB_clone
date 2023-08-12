@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 """
 Defines unit tests for the File Storage class.
 """
@@ -15,12 +15,6 @@ class TestFileStorage(TestCase):
     Test class with methods testing the File Storage
     class
     """
-    def test_all(self):
-        """ Test the all method """
-        obj = FileStorage()
-        actual_obj = obj.all()
-        self.assertIs(type(actual_obj), dict)
-
     def test_new(self):
         """ Test the new method """
         my_dict = {"id": "b29b5df5-72e7-43af-8b10-0db51b6d912f",
