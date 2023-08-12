@@ -14,7 +14,7 @@ class HBNBCommand(cmd.Cmd):
     def do_quit(self, arg):
         """
         A handler to quit the interpreter
-        
+
         Parameters
         arg : string
             The argument passed to this command
