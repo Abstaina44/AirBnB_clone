@@ -317,6 +317,7 @@ class HBNBCommand(cmd.Cmd):
         our CLI is adjusted retrieve objects for
         a given class
         """
+        valid_suffix = ["all()", "count()"]
         prefix_str = ""
         suffix_str = ""
         objects = {}
@@ -327,18 +328,64 @@ class HBNBCommand(cmd.Cmd):
             suffix_str = arg.split(".")[1]
 
             if (prefix_str in HBNBCommand.valid_classes and
-               suffix_str == "all()"):
-                objects = FileStorage().all()
-
-                for key, value in objects.items():
-                    if (prefix_str in key):
-                        found_objects.append(str(value))
-
-                print(found_objects)
+               suffix_str in valid_suffix):
+                if (suffix_str == "all()"):
+                    HBNBCommand.print_all_class_instances(prefix_str)
+                elif (suffix_str == "count()"):
+                    HBNBCommand.print_instance_count(prefix_str);
 
                 return (None)
         
         return (cmd.Cmd.default(self, arg))
+    
+    @staticmethod
+    def filter_objects(class_name):
+        """
+        Returns a list of objects for the given
+        class.
+
+        Parameters
+        class_name : string
+            The name of the class used in filtering
+            the objects to be displayed
+        """
+        objects = {}
+        found_objects = []
+
+        objects = FileStorage().all()
+
+        for key, value in objects.items():
+            if (class_name in key):
+                found_objects.append(str(value))
+
+        return (found_objects)
+
+    @staticmethod
+    def print_all_class_instances(class_name):
+        """
+        Prints all the instances for a class
+
+        Parameters
+        class_name : string
+            The name of the class used to invoke the
+            all command. This class will be used
+            in filtering the objects to be displayed
+        """
+        print(HBNBCommand.filter_objects(class_name))
+
+    @staticmethod
+    def print_instance_count(class_name):
+        """
+        Prints the total number of instances for
+        a class
+
+        Parameters
+        class_name : string
+            The name of the class used to invoke the
+            count command. This class will be used
+            in filtering the objects to be displayed
+        """
+        print(len(HBNBCommand.filter_objects(class_name)))
 
 
 
