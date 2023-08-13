@@ -318,8 +318,7 @@ class HBNBCommand(cmd.Cmd):
         a given class
         """
         valid_suffix = ["all()", "count()"]
-        prefix_str = ""
-        suffix_str = ""
+        prefix_str, suffix_str, id = "", "", ""
         objects = {}
         found_objects = []
 
@@ -328,18 +327,22 @@ class HBNBCommand(cmd.Cmd):
             suffix_str = arg.split(".")[1]
 
             if (prefix_str in HBNBCommand.valid_classes and
-               suffix_str in valid_suffix):
+               suffix_str in valid_suffix or suffix_str.startswith("show(\"")):
                 if (suffix_str == "all()"):
                     HBNBCommand.print_all_class_instances(prefix_str)
                 elif (suffix_str == "count()"):
-                    HBNBCommand.print_instance_count(prefix_str);
+                    HBNBCommand.print_instance_count(prefix_str)
+                elif (suffix_str.startswith("show(\"") and
+                      suffix_str.endswith("\")")):
+                    id = suffix_str[6:-2]
+                    HBNBCommand.print_instance_using_id(prefix_str, id)
 
                 return (None)
-        
+
         return (cmd.Cmd.default(self, arg))
-    
+
     @staticmethod
-    def filter_objects(class_name):
+    def filter_objects(class_name, id=""):
         """
         Returns a list of objects for the given
         class.
@@ -348,6 +351,13 @@ class HBNBCommand(cmd.Cmd):
         class_name : string
             The name of the class used in filtering
             the objects to be displayed
+        id : string, optional
+            The ID for the search object. The
+            default value is an empty string
+
+        Return
+            A list of objects matching whose classes
+            match the given class name
         """
         objects = {}
         found_objects = []
@@ -356,6 +366,11 @@ class HBNBCommand(cmd.Cmd):
 
         for key, value in objects.items():
             if (class_name in key):
+                if (id != "" and id == value.id):
+                    found_objects.append(str(value))
+                    break
+                else:
+                    continue
                 found_objects.append(str(value))
 
         return (found_objects)
@@ -387,6 +402,24 @@ class HBNBCommand(cmd.Cmd):
         """
         print(len(HBNBCommand.filter_objects(class_name)))
 
+    @staticmethod
+    def print_instance_using_id(class_name, id):
+        """
+        Print the instance with the given ID
+
+        Parameters
+        class_name : string
+            The name of the class used to invoke the
+            count command. This class will be used
+            in filtering the objects to be displayed
+        id : string
+            The ID for the given object
+        """
+        object = HBNBCommand.filter_objects(class_name, id)
+        if (object == []):
+            print("** no instance found **")
+        else:
+            print(object)
 
 
 if (__name__ == "__main__"):
