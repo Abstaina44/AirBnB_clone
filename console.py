@@ -5,6 +5,7 @@ interpreter
 """
 import cmd
 from models.base_model import BaseModel
+from models.user import User
 from models.engine.file_storage import FileStorage
 
 
@@ -12,7 +13,7 @@ class HBNBCommand(cmd.Cmd):
     """ Define the command-line interpreter """
 
     prompt = "(hbnb) "
-    valid_classes = ["BaseModel"]
+    valid_classes = ["BaseModel", "User"]
 
     def do_quit(self, arg):
         """ A handler to quit the interpreter """
@@ -109,7 +110,7 @@ class HBNBCommand(cmd.Cmd):
         """
         if (HBNBCommand.validate_arg("create", arg) == 1):
             return (None)
-        obj = BaseModel()
+        obj = eval(arg + "()")
         obj.save()
         print(obj.id)
 
