@@ -327,7 +327,9 @@ class HBNBCommand(cmd.Cmd):
             suffix_str = arg.split(".")[1]
 
             if (prefix_str in HBNBCommand.valid_classes and
-               suffix_str in valid_suffix or suffix_str.startswith("show(\"")):
+               suffix_str in valid_suffix or
+               suffix_str.startswith("show(\"") or
+               suffix_str.startswith("destroy(\"")):
                 if (suffix_str == "all()"):
                     HBNBCommand.print_all_class_instances(prefix_str)
                 elif (suffix_str == "count()"):
@@ -336,6 +338,10 @@ class HBNBCommand(cmd.Cmd):
                       suffix_str.endswith("\")")):
                     id = suffix_str[6:-2]
                     HBNBCommand.print_instance_using_id(prefix_str, id)
+                elif (suffix_str.startswith("destroy(\"") and
+                      suffix_str.endswith("\")")):
+                    id = suffix_str[9:-2]
+                    HBNBCommand.destroy_instance_using_id(prefix_str, id)
 
                 return (None)
 
@@ -369,7 +375,7 @@ class HBNBCommand(cmd.Cmd):
                 if (id != "" and id == value.id):
                     found_objects.append(str(value))
                     break
-                else:
+                elif (id != ""):
                     continue
                 found_objects.append(str(value))
 
@@ -410,7 +416,7 @@ class HBNBCommand(cmd.Cmd):
         Parameters
         class_name : string
             The name of the class used to invoke the
-            count command. This class will be used
+            show command. This class will be used
             in filtering the objects to be displayed
         id : string
             The ID for the given object
@@ -420,6 +426,29 @@ class HBNBCommand(cmd.Cmd):
             print("** no instance found **")
         else:
             print(object)
+
+    @staticmethod
+    def destroy_instance_using_id(class_name, id):
+        """
+        Deletes the instance with the given ID
+
+        Parameters
+        class_name : string
+            The name of the class used to invoke the
+            destroy command. This class will be used
+            in filtering the objects to be deleted
+        id : string
+            The ID for the given object
+        """
+        object = HBNBCommand.filter_objects(class_name, id)
+        if (object == []):
+            print("** no instance found **")
+        else:
+            file_obj = FileStorage()
+            objects = file_obj.all()
+            key = f"{class_name}.{id}"
+            del objects[key]
+            file_obj.save()
 
 
 if (__name__ == "__main__"):
