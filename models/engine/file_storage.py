@@ -42,6 +42,7 @@ class FileStorage:
             with open(FileStorage.__file_path, "r") as file:
                 objects = loads(file.read())
             from models.base_model import BaseModel
+            from models.user import User
             for key, value in objects.items():
                 class_name = value["__class__"]
                 del value["__class__"]
