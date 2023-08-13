@@ -310,6 +310,37 @@ class HBNBCommand(cmd.Cmd):
 
         return (value[1:-1])
 
+    def default(self, arg):
+        """
+        Defines the behaviour for unknown commands.
+        This also ensures that the behaviour of
+        our CLI is adjusted retrieve objects for
+        a given class
+        """
+        prefix_str = ""
+        suffix_str = ""
+        objects = {}
+        found_objects = []
+
+        if ("." in arg):
+            prefix_str = arg.split(".")[0]
+            suffix_str = arg.split(".")[1]
+
+            if (prefix_str in HBNBCommand.valid_classes and
+               suffix_str == "all()"):
+                objects = FileStorage().all()
+
+                for key, value in objects.items():
+                    if (prefix_str in key):
+                        found_objects.append(str(value))
+
+                print(found_objects)
+
+                return (None)
+        
+        return (cmd.Cmd.default(self, arg))
+
+
 
 if (__name__ == "__main__"):
     HBNBCommand().cmdloop()
