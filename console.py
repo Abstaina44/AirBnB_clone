@@ -318,7 +318,7 @@ class HBNBCommand(cmd.Cmd):
         a given class
         """
         valid_suffix = ["all()", "count()"]
-        prefix_str, suffix_str, id, attr, val = "", "", "", "", ""
+        prefix_str, suffix_str, id, attr, val, _dict = "", "", "", "", "", ""
         objects = {}
         found_objects = []
 
@@ -348,6 +348,11 @@ class HBNBCommand(cmd.Cmd):
                     if (len(suffix_str.split()) > 2):
                         arguments = suffix_str[7:-1]
                         id = arguments.split(",")[0].split("\"")[1]
+                        if ("{" in suffix_str):
+                            _dict = arguments.split(",", 1)[1][2:-1]
+                            HBNBCommand.update_instance_using_dict(prefix_str,
+                                                                   id, _dict)
+                            return (None)
                         attr = arguments.split(",")[1].split("\"")[1]
                         val = arguments.split(",")[2].strip()
                         HBNBCommand.update_instance_using_id(prefix_str,
@@ -472,8 +477,8 @@ class HBNBCommand(cmd.Cmd):
         Parameters
         class_name : string
             The name of the class used to invoke the
-            destroy command. This class will be used
-            in filtering the objects to be deleted
+            update command. This class will be used
+            in filtering the objects to be updated
         id : string
             The ID for the given object
         attr : string
@@ -489,19 +494,101 @@ class HBNBCommand(cmd.Cmd):
             print("** no instance found **")
             return (None)
 
-        if (val.startswith("\"")):
-            val = val.split("\"")[1]
-        elif ("." in val):
-            val = float(val)
-        else:
-            val = int(val)
-
+        val = HBNBCommand.cast(val)
         file_obj = FileStorage()
         for key, value in file_obj.all().items():
             if (id in key):
                 setattr(value, attr, val)
                 file_obj.save()
                 return (None)
+
+    @staticmethod
+    def update_instance_using_dict(class_name, id, _dict):
+        """
+        Updates attributes for an instance with
+        the given ID using a dictionary
+
+        Parameters
+        class_name : string
+            The name of the class used to invoke the
+            update command. This class will be used
+            in filtering the objects to be updated
+        id : string
+            The ID for the given object
+        _dict : string
+            The dictionary storing the attributes with
+            their respective values
+        """
+        prop_name, prop_value = "", ""
+        file_obj = None
+        objects = {}
+
+        if (HBNBCommand.filter_objects(class_name, id) == []):
+            print("** no instance found **")
+            return (None)
+
+        file_obj = FileStorage()
+        objects = file_obj.all()
+        for key, value in objects.items():
+            if (id == value.id):
+                for item in _dict.split(", "):
+                    prop_name, prop_value = HBNBCommand.get_property(item)
+                    prop_value = HBNBCommand.cast(prop_value)
+                    setattr(value, prop_name, prop_value)
+                    file_obj.save()
+                break
+
+    def cast(val):
+        """
+        Casts value to an appropriate type
+
+        Parameters
+        val : string
+            The value to cast
+
+        Return
+            val cast into a float, integer or
+            returned as a string
+        """
+        value = ""
+        if (val.startswith("\"")):
+            value = val.split("\"")[1]
+        elif (val.startswith("\'")):
+            value = val.split("\'")[1]
+        elif ("." in val):
+            value = float(val)
+        else:
+            value = int(val)
+
+        return (value)
+
+    @staticmethod
+    def get_property(property_str):
+        """
+        Extracts an attribute name with its
+        value from a property string
+
+        Parameters
+        property_str : string
+            A string representation of an
+            attribute with its value stored
+            as a dictionary value
+
+        Return
+            A tuple containing an attribute
+            name with its value
+        """
+        attribute, value = "", ""
+
+        attribute, value = property_str.split(":")
+        attribute = attribute.strip()
+        if (attribute.startswith("\"")):
+            attribute = attribute.split("\"")[1]
+        else:
+            attribute = attribute.split("\'")[1]
+        value = value.strip()
+
+        return (attribute, value)
 
 
 if (__name__ == "__main__"):
