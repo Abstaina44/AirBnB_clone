@@ -30,8 +30,8 @@ o
 
 ## Tech Stack
 
-- **Frontend:** HTML, CSS, JavaScript (React.js)
-- **Backend:** Node.js, Express.js
+- **Frontend:** HTML, CSS, No JavaScript
+- **Backend:** Python,
 - **Database:** MongoDB (or your preferred database)
 - **Authentication:** JSON Web Tokens (JWT)
 - **Payment:** Integration with a payment gateway (e.g., Stripe)
@@ -48,26 +48,12 @@ o
 2. Navigate to the project directory:
 
 3. Install dependencies for both frontend and backend:
-cd frontend
-npm install
-cd ../backend
-npm instal
-
 
 4. Configure environment variables:
 - Create `.env` files in the `frontend` and `backend` directories.
 - Define necessary environment variables (e.g., database connection, API keys).
 
 5. Run the application:
-
-Frontend
-cd frontend
-npm start
-
-Backend
-cd backend
-npm start
-
 
 ## Usage
 
